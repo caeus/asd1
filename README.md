@@ -15,7 +15,7 @@ Reproducible, isolated, hermetic builds! NO! Man, that's important, sure, but no
 As such, and trying no to make it super difficult to learn, we use a language inspired in all those tools.
 Our unit of work is a Task, and a Task is an implementation, and a set of dependencies (references to other tasks)
 
-Task reference is determined by its location, which takes us to a package. A package is a collection of tasks under a namespace. Multiple projects inhabit a project.
+Task reference is determined by its location, which takes us to a package. A package is a collection of tasks under a namespace. Multiple packages inhabit a project.
 
 A project is a collection of packages, and it's bound to a folder inside the workspace/monorepo. Projects are declared in files named `__project__.py`.
 
