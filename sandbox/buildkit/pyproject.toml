@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-asd = {path = "../../core"}
+asd = {path = "../.."}
 
 
 [build-system]

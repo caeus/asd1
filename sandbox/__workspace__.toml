@@ -1,1 +1,2 @@
-installs=["./buildkit"]
+[venv]
+installs=["-e ./buildkit"]
