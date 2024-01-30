@@ -44,8 +44,9 @@ class Bind:
             configure(cls(binder))
         return decorated
     @staticmethod
-    def merge(conf1:ConfigureModule,conf2:ConfigureModule)->ConfigureModule:
+    def merge(conf1:ConfigureModule,*conf2:ConfigureModule)->ConfigureModule:
         def merged(binder:injector.Binder)->None:
             conf1(binder)
-            conf2(binder)
+            for conf in conf2:
+                conf(binder)
         return merged

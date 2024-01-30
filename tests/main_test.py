@@ -34,6 +34,7 @@ def test_get_current_path() -> None:
     def input_module(bind:Bind)->None:
         bind.value(CWD,CWD(os.path.join(os.getcwd(),"sandbox","subdomain2","project21")))
         bind.value(QueryStr,QueryStr('domains/infras*/**:root:dummy'))
+
     @cli_runner(Bind.merge(test_module,input_module))
     def _(matched_tasks:MatchedTasks)->None:
         print(matched_tasks)
@@ -41,4 +42,11 @@ def test_get_current_path() -> None:
         print(matched_tasks)
         print(matched_tasks)
         print(matched_tasks)
+## Test that venv creation works
+## Test that test_running works
+## implement test running with async support
+## test access of values (inside task action)
+## test circular dependencies  
+## ergonomics: process running, caching, and sha256ing files      
+
     
