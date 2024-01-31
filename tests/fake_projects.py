@@ -40,7 +40,7 @@ class FakeModuleCtx:
         return config
 
 
-class FakeProjectCtx:
+class MockProjectCtx:
     project_id:Final[ProjectId]
     _modules: dict[ModuleId, Module]
 
@@ -60,26 +60,26 @@ class FakeProjectCtx:
     ...
 
 
-class FakeWorkspaceCtx:
+class MockWorkspaceCtx:
     _projects: dict[ProjectId, Project]
 
     def __init__(self, projects: dict[ProjectId, Project]):
         self._projects = projects
 
-    def project(self, id: str)->Callable[[Callable[[FakeProjectCtx], None]],None]:
-        def config(proj: Callable[[FakeProjectCtx], None]) -> None:
+    def project(self, id: str)->Callable[[Callable[[MockProjectCtx], None]],None]:
+        def config(proj: Callable[[MockProjectCtx], None]) -> None:
             pid = ProjectId(id)
             modules: dict[ModuleId, Module] = {}
-            ctx = FakeProjectCtx(project_id=pid,modules=modules)
+            ctx = MockProjectCtx(project_id=pid,modules=modules)
             proj(ctx)
             self._projects[pid] = Project(
                 id=pid, modules=MappingProxyType(modules))
         return config
 
 
-def fake_workspace(work: Callable[[FakeWorkspaceCtx], None]) -> FakeProjects:
+def fake_workspace(work: Callable[[MockWorkspaceCtx], None]) -> FakeProjects:
     projects: dict[ProjectId, Project] = {}
-    ctx = FakeWorkspaceCtx(projects)
+    ctx = MockWorkspaceCtx(projects)
     work(ctx)
     return FakeProjects(MappingProxyType(projects))
 
@@ -103,7 +103,7 @@ def fake_project_loader(fake_projects: FakeProjects) -> ProjectLoader:
 
 
 
-def fake_workspace_module(work: Callable[[FakeWorkspaceCtx], None])->ConfigureModule:
+def mock_workspace_module(work: Callable[[MockWorkspaceCtx], None])->ConfigureModule:
     fake_projects=fake_workspace(work)
     @Bind.module
     def test_module(bind: Bind) -> None:

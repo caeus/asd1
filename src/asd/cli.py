@@ -1,14 +1,16 @@
 
 
+import asyncio
 from dataclasses import dataclass
 import os
-from typing import Callable, Final, NewType, Optional, Protocol, Set, TypeVar
+from typing import Awaitable, Callable, Final, NewType, Optional, Protocol, Set, TypeVar
 from injector import Injector, inject
 
 from wcmatch.glob import GLOBSTAR, glob
-from asd.api import ModuleId, ProjectId, Task, TaskId, TaskRef, WorkspaceAt
+from asd.api import ModuleId, ProjectId, TaskId, TaskRef, WorkspaceAt
 from asd.bind import Bind, ConfigureModule
-from asd.server import PROJECT_MARKER, WORSPACE_MARKER, ProjectRegistry, project_loader, project_registry
+from asd.runner import TaskRegistry, task_registry, task_runner
+from asd.server import PROJECT_MARKER, WORSPACE_MARKER, project_loader, project_registry
 
 
 
@@ -99,25 +101,6 @@ def matched_projects(finder: ProjectFinder, parts: QueryParts) -> MatchedProject
     return finder(parts)
 
 
-
-
-
-class TaskRegistry(Protocol):
-    def __call__(self, ref: TaskRef) -> Optional[Task]: ...
-
-
-def task_registry(project_registry: ProjectRegistry) -> TaskRegistry:
-    def get(ref: TaskRef) -> Optional[Task]:
-        project = project_registry(ref.project)
-        if not project:
-            return None
-        module = project.get(ref.module)
-        if not module:
-            return None
-        return module.get(ref.task)
-    return get
-
-
 MatchedTasks = NewType("MatchedTasks", Set[TaskRef])
 
 
@@ -155,17 +138,18 @@ def cli_module(bind: Bind) -> None:
     bind.singleton(project_registry)
     bind.singleton(task_registry)
     bind.singleton(matched_tasks)
+    bind.singleton(task_runner)
 
 
 T = TypeVar('T')
 
 
 class CliRunner(Protocol):
-    def __call__(self, callable: Callable[..., T]) -> T: ...
+    async def __call__(self, callable: Callable[..., Awaitable[T]],/) -> T: ...
 
 
 def cli_runner(input_module: ConfigureModule = _noop_module) -> CliRunner:
     injector=Injector([cli_module, input_module], auto_bind=False)
-    def runner(callable:Callable[..., T])->T:
-        return injector.call_with_injection(inject(callable))
+    def runner(callable:Callable[..., Awaitable[T]],/)->T:
+        return asyncio.run( injector.call_with_injection(inject(callable)))
     return runner
