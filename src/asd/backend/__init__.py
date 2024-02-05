@@ -4,7 +4,7 @@ from asd.backend.tasks.planner import create_task_planner
 from asd.backend.tasks.repo import DefaultProjectsRepo, DefaultTasksRepo, create_project_loader
 from asd.backend.tasks.runner import create_task_runner_provider
 from asd.backend.tasks.service import create_tasks_service
-from asd.dls import get_working_path
+from asd.dsl import get_working_path
 from asd.kernel import get_cwd, get_workspace_location
 from asd.kernel.bind import Bind, ConfigureModule
 

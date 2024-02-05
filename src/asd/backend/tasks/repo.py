@@ -4,7 +4,7 @@ from types import MappingProxyType
 from typing import Final, Optional, Protocol, Set
 
 from wcmatch import glob
-from asd.dls import ASDModuleConfig, ModuleCtx, Task, TaskRef, WorkingPath, is_asd_module_config
+from asd.dsl import ASDModuleConfig, ModuleCtx, Task, TaskRef, WorkingPath, is_asd_module_config
 
 from asd.kernel import PROJECT_MARKER, ModuleId, ProjectId, TaskId, TaskQuery, WorkspaceAt
 

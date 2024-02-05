@@ -6,7 +6,7 @@ from typing import Hashable, Protocol, Tuple
 from asyncio import Task as Promise
 
 from asd.backend.tasks.planner import TasksPlan
-from asd.dls import TaskCtx, TaskRef
+from asd.dsl import TaskCtx, TaskRef
 from asd.kernel import WorkspaceAt
 
 

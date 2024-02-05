@@ -3,7 +3,7 @@ from types import MappingProxyType
 from typing import NewType, Protocol, Set
 from asd.backend.tasks.repo import TasksRepo
 
-from asd.dls import Task, TaskRef
+from asd.dsl import Task, TaskRef
 
 
 TasksPlan = NewType('TasksPlan', MappingProxyType[TaskRef, Task])
