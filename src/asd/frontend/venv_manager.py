@@ -58,7 +58,7 @@ class DefaultVenvManager:
         self.__venv_path = os.path.join(root, setup.at)
 
     def delete(self) -> None:
-        shutil.rmtree(self.__setup.at)
+        shutil.rmtree(self.__venv_path)
 
     def create(self) -> PyRunner:
         venv.create(self.__venv_path, with_pip=True)
