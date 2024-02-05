@@ -6,7 +6,8 @@ from asd.api import TaskCtx
 from asd.bind import Bind
 from asd.cli import CWD, MatchedTasks, QueryStr, cli_runner
 from asd.runner import TaskRunner
-from .fake_projects import FakeModuleCtx, MockProjectCtx, MockWorkspaceCtx, mock_workspace_module
+from asd.workspace.config import WorkspaceConfig
+from .projects_test import FakeModuleCtx, MockProjectCtx, MockWorkspaceCtx, mock_workspace_module
 
 
 @mock_workspace_module
@@ -44,8 +45,10 @@ def test_get_current_path() -> None:
                    ))
         bind.value(QueryStr, QueryStr('domains/infras*/**:root:dummy'))
 
-    @cli_runner(Bind.merge(mock_project, input_module))
-    async def _(matched_tasks: MatchedTasks, task_runner: TaskRunner) -> None:
+    @cli_runner(input_module)
+    async def _(matched_tasks: MatchedTasks,
+                task_runner: TaskRunner,
+                config:WorkspaceConfig) -> None:
         sss = await task_runner(matched_tasks)
         print(sss)
 

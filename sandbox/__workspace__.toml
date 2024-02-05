@@ -1,2 +1,5 @@
 [venv]
-installs=["-e ./buildkit"]
+installs=[
+    "-e ./buildkit",
+    "-e .."  #This is ASD, needed for testing better
+    ]

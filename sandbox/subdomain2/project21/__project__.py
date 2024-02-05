@@ -1,11 +1,14 @@
 
 
-
 from typing import Hashable
-from asd import ModuleCtx, TaskCtx, project
+from asd.dls import ModuleCtx, TaskCtx, project
+from buildkit import my_common_config
 
 @project
-def root(ctx:ModuleCtx)->None: 
+def root(ctx: ModuleCtx) -> None:
+    my_common_config(ctx)
+    
     @ctx.task()
-    def dummy(ctx:TaskCtx)->Hashable:
+    async def dummy(ctx: TaskCtx) -> Hashable:
+        print("alkdsjlaskjdlksaj")
         ...
