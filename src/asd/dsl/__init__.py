@@ -138,7 +138,7 @@ def is_asd_module_config(any: Any) -> TypeGuard[ASDModuleConfig]:
     return callable(any) and is_asd_object(any) and any.__asd_kind__ == "project"
 
 
-def project(configure: ModuleConfig) -> ASDModuleConfig:
+def module(configure: ModuleConfig) -> ASDModuleConfig:
     setattr(configure, ASD_OBJECT_MARKER, "project")
     if is_asd_module_config(configure):
         return configure
