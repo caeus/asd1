@@ -62,7 +62,7 @@ class DefaultVenvManager:
 
     def create(self) -> PyRunner:
         venv.create(self.__venv_path, with_pip=True)
-        runner = PyRunner.create(self.__setup.at)
+        runner = PyRunner.create(self.__venv_path)
         for dep in self.__setup.installs:
             runner.run(["-m", "pip", "install", *shlex.split(dep)])
         return runner
