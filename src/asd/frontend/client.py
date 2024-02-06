@@ -17,6 +17,6 @@ def create_agent_client(manager: VenvManager) -> AgentClient:
         runner = manager.exists()
         if not runner:
             runner = manager.create()
-        runner.run(["-m", "asd.backend", "run",
+        runner.run(["-m", "asd.backend", cmd.op,
                    RootModel[Cmd](cmd).model_dump_json()])
     return send

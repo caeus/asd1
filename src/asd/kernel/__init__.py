@@ -1,7 +1,7 @@
 import os
 import tomllib
 from types import MappingProxyType
-from typing import Any, Final, NewType, Optional
+from typing import Any, Final, Literal, NewType, Optional
 
 from dataclasses import dataclass
 
@@ -11,9 +11,14 @@ PROJECT_MARKER = "__project__.py"
 WORSPACE_MARKER = "__workspace__.toml"
 
 CWD = NewType("CWD", str)
+
+
 def get_cwd() -> CWD:
     return CWD(os.getcwd())
+
+
 WorkspaceAt = NewType("WorkspaceAt", str)
+
 
 def get_workspace_location(cwd: CWD) -> WorkspaceAt:
     current = os.path.abspath(cwd)
@@ -70,6 +75,13 @@ class TaskQuery:
 @dataclass(frozen=True)
 class RunCmd:
     tasks: Final[TaskQuery]
+    op:Final[Literal['run']] = 'run'
 
 
-Cmd = RunCmd
+@dataclass(frozen=True)
+class QueryCmd:
+    tasks: Final[TaskQuery]
+    op:Final[Literal['query']] = 'query'
+
+
+Cmd = RunCmd | QueryCmd
