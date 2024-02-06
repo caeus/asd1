@@ -31,9 +31,16 @@ def get_workspace_location(cwd: CWD) -> WorkspaceAt:
     return WorkspaceAt(current)
 
 
-ProjectId = NewType("ProjectId", str)
+class ProjectId(str):
+    def __new__(cls, value: str) -> "ProjectId":
+        return super().__new__(cls, value.rstrip("/"))
+
+
 ModuleId = NewType("ModuleId", str)
 TaskId = NewType("TaskId", str)
+
+
+
 
 
 @dataclass(frozen=True)
