@@ -28,9 +28,10 @@ class PyRunner:
 
     def __init__(self, python_path: str) -> None:
         self.__python_path = python_path
-
-    def run(self, args: list[str]) -> None:
-        subprocess.call([self.__python_path, *args])
+#TEST
+    def run(self, args: list[str], cwd: Optional[str] = None) -> None:
+        asdasd = [self.__python_path, *args]
+        subprocess.call(asdasd, cwd=cwd)
 
     @classmethod
     def create(cls, venv_path: str) -> "PyRunner":
@@ -40,7 +41,7 @@ class PyRunner:
             case "posix":
                 return PyRunner(os.path.join(venv_path, "bin", "python"))
             case _:
-                raise Exception("Unknown operating system")
+                raise Exception(f"Unknown operating system {os.name}")
 
 
 class VenvManager(Protocol):
@@ -51,25 +52,29 @@ class VenvManager(Protocol):
 
 class DefaultVenvManager:
     __setup: Final[VenvSetup]
-    __venv_path: Final[str]
+    __root: Final[str]
 
     def __init__(self, setup: VenvSetup, root: WorkspaceAt) -> None:
         self.__setup = setup
-        self.__venv_path = os.path.join(root, setup.at)
+        self.__root = root
+
+    @property
+    def __venv_path(self) -> str:
+        return os.path.join(self.__root, self.__setup.at)
 
     def delete(self) -> None:
         shutil.rmtree(self.__venv_path)
-
+#TEST
     def create(self) -> PyRunner:
         venv.create(self.__venv_path, with_pip=True)
         runner = PyRunner.create(self.__venv_path)
         for dep in self.__setup.installs:
-            runner.run(["-m", "pip", "install", *shlex.split(dep)])
+            runner.run(["-m", "pip", "install", *shlex.split(dep)], cwd=self.__root)
         return runner
 
     def exists(self) -> Optional[PyRunner]:
         if os.path.exists(self.__venv_path):
-            return PyRunner.create(self.__setup.at)
+            return PyRunner.create(self.__venv_path)
         return None
 
 
