@@ -7,7 +7,7 @@ from typing import Protocol
 from pydantic import TypeAdapter
 
 from asd.backend.tasks.service import TasksService
-from asd.kernel import QueryCmd, RunCmd
+from asd.kernel import PlanCmd, QueryCmd, RunCmd
 
 
 class Cli(Protocol):
@@ -24,6 +24,9 @@ def create_cli(service: TasksService) -> Cli:
             case 'query':
                 asyncio.run(service.query(TypeAdapter(
                     QueryCmd).validate_json(sys.argv[2])))
+            case 'plan':
+                asyncio.run(service.plan(TypeAdapter(
+                    PlanCmd).validate_json(sys.argv[2])))
             case _:
                 raise Exception(f"Unknown op {op}")
     return cli

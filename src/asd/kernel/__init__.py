@@ -75,13 +75,19 @@ class TaskQuery:
 @dataclass(frozen=True)
 class RunCmd:
     tasks: Final[TaskQuery]
-    op:Final[Literal['run']] = 'run'
+    op: Final[Literal['run']] = 'run'
 
 
 @dataclass(frozen=True)
 class QueryCmd:
     tasks: Final[TaskQuery]
-    op:Final[Literal['query']] = 'query'
+    op: Final[Literal['query']] = 'query'
 
 
-Cmd = RunCmd | QueryCmd
+@dataclass(frozen=True)
+class PlanCmd:
+    tasks: Final[TaskQuery]
+    op: Final[Literal['plan']] = 'plan'
+
+
+Cmd = RunCmd | QueryCmd | PlanCmd

@@ -3,12 +3,13 @@ from asd.backend.tasks.planner import TaskPlanner
 from asd.backend.tasks.repo import TasksRepo
 from asd.backend.tasks.runner import TaskRunnerProvider
 
-from asd.kernel import QueryCmd, RunCmd
+from asd.kernel import PlanCmd, QueryCmd, RunCmd
 
 
 class TasksService(Protocol):
     async def run(self, cmd: RunCmd) -> None: ...
     async def query(self, cmd: QueryCmd) -> None: ...
+    async def plan(self, cmd: PlanCmd) -> None: ...
 
 
 class DefaultTasksService:
@@ -35,6 +36,13 @@ class DefaultTasksService:
     async def query(self, cmd: QueryCmd) -> None:
         tasks = self.__repo.query(cmd.tasks)
         for ref in tasks:
+            print(ref)
+    async def plan(self, cmd: PlanCmd) -> None:
+        tasks = self.__repo.query(cmd.tasks)
+        if len(tasks) == 0:
+            raise Exception(f"Query {cmd.tasks} didn't match any task")
+        plan = self.__planner(tasks)
+        for ref in plan:
             print(ref)
 
     @classmethod
