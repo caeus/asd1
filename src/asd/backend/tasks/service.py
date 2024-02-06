@@ -1,4 +1,6 @@
 from typing import Final, Protocol
+
+import click
 from asd.backend.tasks.planner import TaskPlanner
 from asd.backend.tasks.repo import TasksRepo
 from asd.backend.tasks.runner import TaskRunnerProvider
@@ -37,15 +39,19 @@ class DefaultTasksService:
         tasks = self.__repo.query(cmd.tasks)
         for ref in tasks:
             print(ref)
+
     async def plan(self, cmd: PlanCmd) -> None:
         tasks = self.__repo.query(cmd.tasks)
         if len(tasks) == 0:
             raise Exception(f"Query {cmd.tasks} didn't match any task")
         plan = self.__planner(tasks)
-        for (ref,desc) in plan.items():
-            print(ref)
-            for dep in desc.deps:
-                print(f"  * {dep}")
+        click.echo(
+            "\n".join([
+                f"{ref}\n"+(
+                    "\n".join([f"  * {dep}" for dep in desc.deps])
+                ) for (ref, desc) in plan.items()
+            ])
+        )
 
     @classmethod
     def create(cls, repo: TasksRepo,
