@@ -11,7 +11,7 @@ WorkingPath = NewType("WorkingPath", ProjectId)
 
 
 def get_working_path(cwd: CWD, workspace_at: WorkspaceAt) -> WorkingPath:
-    return WorkingPath(ProjectId(os.path.relpath(cwd, workspace_at)))
+    return WorkingPath(ProjectId(os.path.relpath(cwd, workspace_at).rstrip("/")))
 
 
 
@@ -27,7 +27,7 @@ class TaskRef:
         parts = ref.split(":")
         match len(parts):
             case 3:
-                return cls(project=ProjectId(parts[0]),
+                return cls(project=ProjectId(parts[0].rstrip("/")),
                            module=ModuleId(parts[1]),
                            task=TaskId(parts[2]))
             case 2:
