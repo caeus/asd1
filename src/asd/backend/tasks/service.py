@@ -49,7 +49,7 @@ class DefaultTasksService:
             "".join([
                 f"{ref}\n"+(
                     "".join([f"\n  * {dep}" for dep in desc.deps])
-                )+"\n" for (ref, desc) in plan.items()
+                )+"\n----------\n" for (ref, desc) in plan.items()
             ])
         )
 
