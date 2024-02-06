@@ -42,8 +42,10 @@ class DefaultTasksService:
         if len(tasks) == 0:
             raise Exception(f"Query {cmd.tasks} didn't match any task")
         plan = self.__planner(tasks)
-        for ref in plan:
+        for (ref,desc) in plan.items():
             print(ref)
+            for dep in desc.deps:
+                print(f"  * {dep}")
 
     @classmethod
     def create(cls, repo: TasksRepo,
