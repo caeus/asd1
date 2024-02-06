@@ -67,8 +67,6 @@ def main(ctx:ModuleCtx)->None:
     @ctx.task()
     async def say_hello(ctx:TaskCtx)->None:
         print("Hello...")
-    
-    
 
 ```
 

@@ -30,15 +30,19 @@ def create_task_runner_provider(workspace_at: WorkspaceAt) -> TaskRunnerProvider
                 async def action() -> tuple[TaskRef, Hashable]:
                     task = plan[ref]
                     deps = await asyncio.gather(*[run_task(dep) for dep in task.deps])
-                    deps_map = MappingProxyType({dep[0]: dep[1] for dep in deps})
+                    deps_map = MappingProxyType(
+                        {dep[0]: dep[1] for dep in deps})
                     try:
-                        return (ref, await plan[ref].action(TaskCtx(
+                        click.echo(f"WILL FUCKING RUN {ref}")
+                        res = await plan[ref].action(TaskCtx(
                             id=ref.task,
                             module=ref.module,
                             project=ref.project,
                             workspace=workspace_at,
                             deps=deps_map
-                        )))
+                        ))
+                        click.echo(f"Succeeded Running {ref}")
+                        return (ref, res)
                     except Exception as e:
                         click.echo(
                             f"Task {ref} failed with error {e}",
