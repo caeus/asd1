@@ -38,7 +38,7 @@ class DefaultTasksService:
     async def query(self, cmd: QueryCmd) -> None:
         tasks = self.__repo.query(cmd.tasks)
         for ref in tasks:
-            print(ref)
+            click.echo(ref)
 
     async def plan(self, cmd: PlanCmd) -> None:
         tasks = self.__repo.query(cmd.tasks)
@@ -48,8 +48,8 @@ class DefaultTasksService:
         click.echo(
             "".join([
                 f"{ref}\n"+(
-                    "".join([f"\n  * {dep}" for dep in desc.deps])
-                )+"\n----------\n" for (ref, desc) in plan.items()
+                    "".join([f"  * {dep}\n" for dep in desc.deps])
+                )+"\n" for (ref, desc) in plan.items()
             ])
         )
 
