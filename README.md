@@ -20,70 +20,57 @@ As such, and trying no to make it super difficult to learn, we use a language in
 
 Our unit of work is a Task, and a Task is an implementation, and a set of dependencies (references to other tasks)
 
-Task reference is determined by its location, which takes us to a package. A package is a collection of tasks. Multiple projects inhabit a project.
+Task reference is determined by its location, which takes us to a module. A module is a collection of tasks. Multiple modules inhabit a project.
 
-A project is a collection of packages, and it's bound to a folder inside the workspace. Projects are declared in files named `__project__.py`.
+A project is a collection of modules, and it's bound to a folder inside the workspace. Projects are declared in files named `__project__.py`.
 
 The workspace is but the root of the monorepo, and it's declared using the file `<monorepo_root>/__workspace__.toml`.
 
 Similar to Bazel, but simpler! no toolchains, no remote repositories, none of that.
 
-## Usual anatomy of an ASD monorepo
 
-ASD is written using Python, so a lot of the cognitive overhead comes from the python development intrincacies.
+## Getting started (Hello world)
 
-As such, and to have some sort of hermeticness, isolation, determinism and reproducibility, the `__workspace__.toml` file controls the creation of the virtual env to interpret any of the `__project__.py` files.
+Install asd globally by running `pip install git+https://github.com/caeus/asd`, that's it. It uses python 3.12 or higher, so beware!
 
-Virtual env creation is simple: a route to install it, and list of packages to install, optionally a python bin path to create the venv.
 
-That being said, if you want to DRY your builds, you can have a project inside your monorepo which you can install in editable mode.
-Meaning all `__proyect__.py` can use the python modules in that project. Which takes us to the anayomy of an ASD monorepo"
+Start your monorepo by creating a `__workspace__.toml` file at the root of it and include this content:
+```toml
+[venv]
 ```
-.
-├── __workspace__.toml
-├── build_src
-├── project1
-│   └── __proyect__.py
-└── subdomain2
-    ├── project21
-    │   └── __proyect__.py
-    └── project22
-        └── __proyect__.py
+Yep, that simple. the `venv` table has two fields:
+1. `at`, which tells ASD where to install the virtual environment (defaults to `.venv`)
+2. `installs`, a list of PEP508 strings (dependencies) that your build will use. If you want write your own extensions, you can use a reference to a project inside the monorepo. It needs to be a `pyproject.toml` or `setup.py` python project. (defaults to a `[]`, a dependency to ASD is always included).
+
+Now write at the root of the monorepo (or anywhere inside) a `__project__.py` file with this content:
+```python
+from asd.dsl import *
+def main(ctx:ModuleCtx)->None:
+    @ctx.task()
+    async def hello_world(ctx:TaskCtx)->None:
+        print("Hello world")
+```
+
+Now you can just run `asd run '<root relative path to folder with __project__.py file>:main:hello_world'` (ie `asd run :main:hello_world`, notice the colon at the begginning), and you are done!
+
+Moreless... the coolest part of ASD is the execution model (a DAG (a structure I'm obsessed with)), so let's check it.
+
+Now change your `__project__.py` file content to this:
+
+```python
+from asd.dsl import *
+def main(ctx:ModuleCtx)->None:
+    @ctx.task("say_hello")
+    async def say_world(ctx:TaskCtx)->None:
+        print("World!!!")
+    
+    @ctx.task()
+    async def say_hello(ctx:TaskCtx)->None:
+        print("Hello...")
+    
+    
 
 ```
 
-
-
-# ASD
-ASD is a build system for monorepos. It emerges from the need to address these pain points:
-
-* Poor monorepo support for very mainstream languages like JS, Python.
-* No Turing complete languages to declare builds (TOML, YAML, JSON). Which makes it a pain in the ass to DRY builds.
-* Bazel's frustratringly complex model, and how bad it plays with others.
-
-ASD also draws inspiration from other build systems, especially those which model tasks and dependencies as DAG (Bazel (I KNOW), Gradle, SBT, Pants, Makefile).
-
-## Philosphy
-
-Reproducible, isolated, hermetic builds! NO! Man, that's important, sure, but not as important as allowing developers to partially adopt. So ASD lets you use whatever traditional dependency manager you are used to (pip, poetry, yarn, npm, who cares?), while it provides the toolkit to organize task execution over your monorepo.
-
-### Terminology
-As such, and trying no to make it super difficult to learn, we use a language inspired in all those tools.
-Our unit of work is a Task, and a Task is an implementation, and a set of dependencies (references to other tasks)
-
-Task reference is determined by its location, which takes us to a package. A package is a collection of tasks under a namespace. Multiple packages inhabit a project.
-
-A project is a collection of packages, and it's bound to a folder inside the workspace/monorepo. Projects are declared in files named `__project__.py`.
-
-The workspace is but the root of the monorepo, and it's declared using the file `<monorepo_root>/__workspace__.py`.
-
-Similar to Bazel, but simpler! no toolchains, no remote repositories, none of that.
-
-## Usual anatomy of an ASD monorepo
-
-ASD is written using Python, so a lot of the cognitive overhead comes from the python development intrincacies.
-
-As such, and to have some sort of hermeticness, isolation and reproducibility, the `__workspace__` file controls the creation of the virtual env to interpret any of the `__project__.py` files.
-
-That env, can be anything,
+and run `asd run :main:say_world`, and you'll notice that `Hello...` happens before `World!!!`
 
