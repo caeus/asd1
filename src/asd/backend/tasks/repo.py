@@ -100,7 +100,7 @@ class DefaultProjectsRepo:
     def query(self, query: str) -> Set[ProjectId]:
         marker_size = PROJECT_MARKER.__len__()
         return {
-            ProjectId(marker[:-marker_size])
+            ProjectId(marker[:-marker_size].rstrip("/"))
             for marker in
             glob.glob(
                 os.path.join(query, PROJECT_MARKER),

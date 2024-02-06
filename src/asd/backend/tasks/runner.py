@@ -30,8 +30,7 @@ def create_task_runner_provider(workspace_at: WorkspaceAt) -> TaskRunnerProvider
                 async def action() -> tuple[TaskRef, Hashable]:
                     task = plan[ref]
                     deps = await asyncio.gather(*[run_task(dep) for dep in task.deps])
-                    deps_map = MappingProxyType(
-                        {dep[0]: dep[1] for dep in deps})
+                    deps_map = MappingProxyType({dep[0]: dep[1] for dep in deps})
                     try:
                         return (ref, await plan[ref].action(TaskCtx(
                             id=ref.task,
