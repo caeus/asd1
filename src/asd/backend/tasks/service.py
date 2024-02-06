@@ -46,10 +46,10 @@ class DefaultTasksService:
             raise Exception(f"Query {cmd.tasks} didn't match any task")
         plan = self.__planner(tasks)
         click.echo(
-            "\n".join([
+            "".join([
                 f"{ref}\n"+(
-                    "\n".join([f"  * {dep}" for dep in desc.deps])
-                ) for (ref, desc) in plan.items()
+                    "".join([f"\n  * {dep}" for dep in desc.deps])
+                )+"\n" for (ref, desc) in plan.items()
             ])
         )
 
