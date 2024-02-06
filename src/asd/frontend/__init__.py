@@ -1,5 +1,6 @@
 import click
 from injector import Injector
+from asd.frontend.commands.plan import create_plan_command
 from asd.frontend.commands.query import create_query_command
 from asd.kernel import create_workspace_config, get_cwd, get_workspace_location
 from asd.kernel.bind import Bind, ConfigureModule
@@ -17,6 +18,7 @@ def launcher_module(bind: Bind) -> None:
     bind.singleton(create_run_command)
     bind.singleton(create_env_command)
     bind.singleton(create_query_command)
+    bind.singleton(create_plan_command)
     bind.singleton(create_msg_broker)
     bind.singleton(create_agent_client)
     bind.singleton(create_venv_manager)
