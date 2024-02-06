@@ -89,12 +89,12 @@ class ProjectsRepo(Protocol):
 class DefaultProjectsRepo:
     __root__: Final[WorkspaceAt]
     __loader__: Final[ProjectLoader]
-    __projects__:Final[dict[ProjectId,Optional[Project]]]
+    __projects__: Final[dict[ProjectId, Optional[Project]]]
 
     def __init__(self, root: WorkspaceAt, loader: ProjectLoader) -> None:
         self.__root__ = root
         self.__loader__ = loader
-        self.__projects__={}
+        self.__projects__ = {}
         pass
 
     def query(self, query: str) -> Set[ProjectId]:
@@ -108,11 +108,12 @@ class DefaultProjectsRepo:
                 flags=glob.GLOBSTAR
             )
         }
-    def get(self,id:ProjectId)->Optional[Project]:
+
+    def get(self, id: ProjectId) -> Optional[Project]:
         if id in self.__projects__:
             return self.__projects__[id]
         project = self.__loader__(id)
-        self.__projects__[id]=project
+        self.__projects__[id] = project
         return project
 
     @classmethod
@@ -122,29 +123,33 @@ class DefaultProjectsRepo:
 
 class TasksRepo(Protocol):
     def query(self, query: TaskQuery) -> Set[TaskRef]: ...
-    def get(self,ref:TaskRef)->Optional[Task]:...
-    
+    def get(self, ref: TaskRef) -> Optional[Task]: ...
+
+
 class DefaultTasksRepo:
-    __projects__:Final[ProjectsRepo]
-    __working_path__:Final[WorkingPath]
-    def __init__(self,project:ProjectsRepo,working_path:WorkingPath) -> None:
-        self.__projects__=project
-        self.__working_path__=working_path
-    def get(self,ref:TaskRef)->Optional[Task]: 
+    __projects__: Final[ProjectsRepo]
+    __working_path__: Final[WorkingPath]
+
+    def __init__(self, project: ProjectsRepo, working_path: WorkingPath) -> None:
+        self.__projects__ = project
+        self.__working_path__ = working_path
+
+    def get(self, ref: TaskRef) -> Optional[Task]:
         project = self.__projects__.get(ref.project)
-        if project is None: 
+        if project is None:
             return None
         module = project.get(ref.module)
         if module is None:
             return None
         return module.get(ref.task)
-    def query(self,query:TaskQuery)->Set[TaskRef]:
+
+    def query(self, query: TaskQuery) -> Set[TaskRef]:
         glob = query.project_glob
         if glob is not None:
             projects = self.__projects__.query(glob)
         else:
             projects = {self.__working_path__}
-        result:Set[TaskRef] = set()
+        result: Set[TaskRef] = set()
         for project_id in projects:
             ref = TaskRef(project=project_id,
                           module=query.module,
@@ -154,7 +159,6 @@ class DefaultTasksRepo:
                 result.add(ref)
         return result
 
-    
     @classmethod
-    def create(cls,project:ProjectsRepo,working_path:WorkingPath)->TasksRepo:
-        return cls(project=project,working_path=working_path)
+    def create(cls, project: ProjectsRepo, working_path: WorkingPath) -> TasksRepo:
+        return cls(project=project, working_path=working_path)
