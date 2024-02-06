@@ -4,13 +4,15 @@ from dataclasses import dataclass
 
 from asd.frontend.venv_manager import VenvManager
 
+
 @dataclass(frozen=True)
 class EnvCmdHandler:
-    impl:Final[click.Command]
+    impl: Final[click.Command]
 
-def create_launcher_command(venv_manager:VenvManager)->EnvCmdHandler:
+
+def create_env_command(venv_manager: VenvManager) -> EnvCmdHandler:
     @EnvCmdHandler
     @click.command()
-    def env()->None:
+    def env() -> None:
         venv_manager.delete()
     return env
