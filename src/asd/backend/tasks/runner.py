@@ -33,7 +33,6 @@ def create_task_runner_provider(workspace_at: WorkspaceAt) -> TaskRunnerProvider
                     deps_map = MappingProxyType(
                         {dep[0]: dep[1] for dep in deps})
                     try:
-                        click.echo(f"WILL FUCKING RUN {ref}")
                         res = await plan[ref].action(TaskCtx(
                             id=ref.task,
                             module=ref.module,
@@ -41,7 +40,6 @@ def create_task_runner_provider(workspace_at: WorkspaceAt) -> TaskRunnerProvider
                             workspace=workspace_at,
                             deps=deps_map
                         ))
-                        click.echo(f"Succeeded Running {ref}")
                         return (ref, res)
                     except Exception as e:
                         click.echo(
