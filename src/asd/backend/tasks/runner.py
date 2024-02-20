@@ -1,15 +1,33 @@
 
 
 import asyncio
-from types import MappingProxyType
-from typing import Hashable, Protocol, Tuple
 from asyncio import Task as Promise
+from dataclasses import dataclass
+from types import MappingProxyType
+from typing import Final, Hashable, Never, Protocol, Tuple
 
 import click
 
 from asd.backend.tasks.planner import TasksPlan
 from asd.dsl import TaskCtx, TaskRef
 from asd.kernel import WorkspaceAt
+
+
+@dataclass(frozen=True)
+class Succ[T]:
+    value: Final[T]
+    def get(self)->T:
+        return self.value
+
+
+@dataclass(frozen=True)
+class Err:
+    value: Final[Exception]
+    def get(self)->Never:
+        raise self.value
+
+
+type Result[T] = Succ[T] | Err
 
 
 class TaskRunner(Protocol):
@@ -49,9 +67,15 @@ def create_task_runner_provider(workspace_at: WorkspaceAt) -> TaskRunnerProvider
                 if ref not in promises:
                     promises[ref] = asyncio.create_task(action())
                 return promises[ref]
-            results_list: list[Tuple[TaskRef, Hashable]] = await asyncio.gather(*[run_task(ref) for ref in plan])
+
+            async def run_task_safely(ref: TaskRef) -> tuple[TaskRef,Result[Hashable]]:
+                try:
+                    return ref,Succ(await run_task(ref))
+                except Exception as exp:
+                    return ref, Err(exp)
+            results_list: list[Tuple[TaskRef, Result[Hashable]]] = await asyncio.gather(*[run_task_safely(ref) for ref in plan])
             return MappingProxyType({
-                ref: result
+                ref: result.get()
                 for (ref, result) in results_list
             })
         return run

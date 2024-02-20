@@ -31,7 +31,7 @@ class PyRunner:
 #TEST
     def run(self, args: list[str], cwd: Optional[str] = None) -> None:
         asdasd = [self.__python_path, *args]
-        subprocess.call(asdasd, cwd=cwd)
+        subprocess.check_call(asdasd, cwd=cwd)
 
     @classmethod
     def create(cls, venv_path: str) -> "PyRunner":
