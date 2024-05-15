@@ -16,7 +16,7 @@ Because it's super fast to write! But if you whish I can make it stand for Aggre
 Reproducible, isolated, hermetic, deterministic builds! NO! Man, that's important, sure, but not as important as allowing developers to progressively adopt it. So ASD lets you use whatever traditional dependency manager you are used to (pip, poetry, yarn, npm, gradle, sbt who cares?), while it provides the toolkit to organize task execution over your monorepo.
 
 ### Terminology
-As such, and trying no to make it super difficult to learn, we use a language inspired in all those tools.
+As such, and trying not to make it super difficult to learn, we use a language inspired in all those tools.
 
 Our unit of work is a Task, and a Task is an implementation, and a set of dependencies (references to other tasks)
 
